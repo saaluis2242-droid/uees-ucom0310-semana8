@@ -1,6 +1,7 @@
 package edu.uees.reservas.api;
 
 import edu.uees.reservas.domain.Reserva;
+import edu.uees.reservas.service.ReservaNoEncontradaException;
 import edu.uees.reservas.service.ReservaService;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
@@ -129,7 +130,7 @@ class ReservaControllerTest {
     @Test
     void buscarIdInexistenteHoyNoTieneManejoHttpDeErrores() {
         // Arrange
-        when(service.buscar("R-999")).thenThrow(new IllegalArgumentException("Reserva no encontrada"));
+        when(service.buscar("R-999")).thenThrow(new ReservaNoEncontradaException("R-999"));
 
         // Act
         ServletException ex = assertThrows(
@@ -137,6 +138,6 @@ class ReservaControllerTest {
                 () -> mockMvc.perform(get("/api/reservas/R-999")));
 
         // Assert
-        assertInstanceOf(IllegalArgumentException.class, ex.getCause());
+        assertInstanceOf(ReservaNoEncontradaException.class, ex.getCause());
     }
 }
