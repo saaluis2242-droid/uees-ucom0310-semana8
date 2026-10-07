@@ -17,8 +17,15 @@ mvn clean test
 mvn spring-boot:run
 ```
 
-## Endpoint inicial
-`GET http://localhost:8080/api/reservas/salud`
+## Endpoints
+| Método | Ruta |
+|---|---|
+| GET | `/api/reservas/salud` |
+| GET | `/api/reservas/puede-cancelar?horas=2` |
+| POST | `/api/reservas` (JSON: `{"id":"R-001","tipo":"NORMAL"}`) |
+| GET | `/api/reservas/{id}` |
+
+Detalle de pruebas manuales, pruebas automatizadas y reto en `docs/04_LABORATORIO_INTEGRACION.md`.
 
 ## Cobertura
 Después de `mvn clean test`, abrir:
