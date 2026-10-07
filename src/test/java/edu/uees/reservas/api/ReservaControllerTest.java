@@ -2,6 +2,7 @@ package edu.uees.reservas.api;
 
 import edu.uees.reservas.domain.Reserva;
 import edu.uees.reservas.service.ReservaService;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -116,5 +119,24 @@ class ReservaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("R-001"))
                 .andExpect(jsonPath("$.tipo").value("VIP"));
+    }
+
+    /**
+     * Reto: documenta el comportamiento ACTUAL. Como nadie maneja la excepción,
+     * esta se escapa del Controller (en el servidor real termina en un 500).
+     * Cuando se agregue un @RestControllerAdvice, esta prueba debe cambiar a esperar 404.
+     */
+    @Test
+    void buscarIdInexistenteHoyNoTieneManejoHttpDeErrores() {
+        // Arrange
+        when(service.buscar("R-999")).thenThrow(new IllegalArgumentException("Reserva no encontrada"));
+
+        // Act
+        ServletException ex = assertThrows(
+                ServletException.class,
+                () -> mockMvc.perform(get("/api/reservas/R-999")));
+
+        // Assert
+        assertInstanceOf(IllegalArgumentException.class, ex.getCause());
     }
 }
