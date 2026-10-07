@@ -98,6 +98,21 @@ class ReservaServiceTest {
     }
 
     @Test
+    void crearConIdRepetidoLanzaReservaDuplicadaYNoGuarda() {
+        // Arrange (ya existe una reserva con ese id)
+        when(repository.buscarPorId("R-001")).thenReturn(Optional.of(new Reserva("R-001", "NORMAL")));
+
+        // Act
+        ReservaDuplicadaException ex = assertThrows(
+                ReservaDuplicadaException.class,
+                () -> service.crear("R-001", "VIP"));
+
+        // Assert
+        assertEquals("Ya existe una reserva con id: R-001", ex.getMessage());
+        verify(repository, never()).guardar(any());
+    }
+
+    @Test
     void buscarIdExistenteDevuelveLaReserva() {
         // Arrange
         Reserva guardada = new Reserva("R-002", "NORMAL");
