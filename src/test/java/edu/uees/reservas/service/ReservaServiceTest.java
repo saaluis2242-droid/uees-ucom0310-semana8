@@ -111,17 +111,17 @@ class ReservaServiceTest {
     }
 
     @Test
-    void buscarIdInexistenteLanzaExcepcion() {
+    void buscarIdInexistenteLanzaReservaNoEncontrada() {
         // Arrange
         when(repository.buscarPorId("R-999")).thenReturn(Optional.empty());
 
         // Act
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
+        ReservaNoEncontradaException ex = assertThrows(
+                ReservaNoEncontradaException.class,
                 () -> service.buscar("R-999"));
 
         // Assert
-        assertEquals("Reserva no encontrada", ex.getMessage());
+        assertEquals("Reserva no encontrada: R-999", ex.getMessage());
     }
 
     @Test
