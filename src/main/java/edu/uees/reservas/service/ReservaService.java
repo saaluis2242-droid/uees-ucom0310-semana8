@@ -18,7 +18,12 @@ public class ReservaService {
     }
 
     public Reserva crear(String id, String tipo) {
-        return repository.guardar(new Reserva(id, tipo));
+        // Primero el dominio valida el id; después se revisa que no esté repetido
+        Reserva nueva = new Reserva(id, tipo);
+        if (repository.buscarPorId(nueva.getId()).isPresent()) {
+            throw new ReservaDuplicadaException(nueva.getId());
+        }
+        return repository.guardar(nueva);
     }
 
     public Reserva buscar(String id) {

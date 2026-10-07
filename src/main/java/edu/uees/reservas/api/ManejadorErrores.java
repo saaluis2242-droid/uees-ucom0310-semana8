@@ -1,5 +1,6 @@
 package edu.uees.reservas.api;
 
+import edu.uees.reservas.service.ReservaDuplicadaException;
 import edu.uees.reservas.service.ReservaNoEncontradaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,5 +18,11 @@ public class ManejadorErrores {
     public ResponseEntity<ErrorRespuesta> reservaNoEncontrada(ReservaNoEncontradaException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorRespuesta(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(ReservaDuplicadaException.class)
+    public ResponseEntity<ErrorRespuesta> reservaDuplicada(ReservaDuplicadaException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorRespuesta(HttpStatus.CONFLICT.value(), ex.getMessage()));
     }
 }
