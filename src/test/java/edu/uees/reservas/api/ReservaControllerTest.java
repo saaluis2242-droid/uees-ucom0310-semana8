@@ -3,7 +3,6 @@ package edu.uees.reservas.api;
 import edu.uees.reservas.domain.Reserva;
 import edu.uees.reservas.service.ReservaNoEncontradaException;
 import edu.uees.reservas.service.ReservaService;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -122,22 +119,15 @@ class ReservaControllerTest {
                 .andExpect(jsonPath("$.tipo").value("VIP"));
     }
 
-    /**
-     * Reto: documenta el comportamiento ACTUAL. Como nadie maneja la excepción,
-     * esta se escapa del Controller (en el servidor real termina en un 500).
-     * Cuando se agregue un @RestControllerAdvice, esta prueba debe cambiar a esperar 404.
-     */
     @Test
-    void buscarIdInexistenteHoyNoTieneManejoHttpDeErrores() {
+    void buscarIdInexistenteResponde404ConMensaje() throws Exception {
         // Arrange
         when(service.buscar("R-999")).thenThrow(new ReservaNoEncontradaException("R-999"));
 
-        // Act
-        ServletException ex = assertThrows(
-                ServletException.class,
-                () -> mockMvc.perform(get("/api/reservas/R-999")));
-
-        // Assert
-        assertInstanceOf(ReservaNoEncontradaException.class, ex.getCause());
+        // Act + Assert
+        mockMvc.perform(get("/api/reservas/R-999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.estado").value(404))
+                .andExpect(jsonPath("$.mensaje").value("Reserva no encontrada: R-999"));
     }
 }
